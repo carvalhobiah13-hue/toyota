@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   BadgeCheck,
   Check,
-  ChevronDown,
   ChevronRight,
   CircleHelp,
   CreditCard,
@@ -18,13 +17,25 @@ import {
   Truck,
   X,
 } from "lucide-react";
-import { catalogCategories, catalogModels, partFamilies, products, type CatalogProduct } from "../data/products";
+import { catalogCategories, partFamilies, products, type CatalogProduct } from "../data/products";
+import { photoCredits, type PhotoCredit } from "../data/photoCredits";
 import { buildWhatsAppUrl, type ContactTopic } from "../lib/whatsapp";
+
+function PhotoCreditLine({ credit, className = "" }: { credit: PhotoCredit; className?: string }) {
+  return (
+    <p className={`photo-credit-line ${className}`}>
+      Foto: <a href={credit.sourceUrl} target="_blank" rel="noopener noreferrer">{credit.author}</a>
+      {" · "}<a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer">{credit.licenseLabel}</a>
+      {credit.additionalLicenseUrl && credit.additionalLicenseLabel && <>
+        {" / "}<a href={credit.additionalLicenseUrl} target="_blank" rel="noopener noreferrer">{credit.additionalLicenseLabel}</a>
+      </>}
+    </p>
+  );
+}
 
 export default function Home() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Todos");
-  const [model, setModel] = useState("Todos os modelos");
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   const [notice, setNotice] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,19 +44,16 @@ export default function Home() {
     const query = search.trim().toLocaleLowerCase("pt-BR");
     return products.filter((product) => {
       const matchesCategory = category === "Todos" || product.category === category;
-      const matchesModel = model === "Todos os modelos" || product.models.includes(model);
       const searchable = [
         product.name,
-        product.reference,
         product.category,
         product.description,
-        ...product.models,
       ]
         .join(" ")
         .toLocaleLowerCase("pt-BR");
-      return matchesCategory && matchesModel && (!query || searchable.includes(query));
+      return matchesCategory && (!query || searchable.includes(query));
     });
-  }, [category, model, search]);
+  }, [category, search]);
 
   function openContact(topic: ContactTopic, product?: CatalogProduct, family?: string) {
     const url = buildWhatsAppUrl(topic, product, family);
@@ -129,16 +137,16 @@ export default function Home() {
             </div>
             <span className="hero-index">01 <i /> 03</span>
           </div>
-          <div className="hero-art" aria-label="Composição ilustrativa de peças e acessórios automotivos">
+          <div className="hero-art" aria-label="Fotografia real de uma Toyota Hilux com tendas no teto">
             <img
-              src="/images/fallback-hero.svg"
-              alt="Composição ilustrativa de bagageiro, roda e tapete automotivo"
+              src="/images/toyota-hilux-roof-tents.jpg"
+              alt="Toyota Hilux D-4D com tendas instaladas no teto em Hardap, Namíbia, em 2007."
               fetchPriority="high"
-              onError={(event) => { if (!event.currentTarget.dataset.fallback) { event.currentTarget.dataset.fallback = "true"; event.currentTarget.src = "/images/fallback-hero.svg"; } }}
             />
-            <div className="hero-art-tag"><span>ROTA / 01</span><small>PEÇAS EM MOVIMENTO</small></div>
-            <div className="hero-art-stamp"><span>CONSULTA</span><strong>direta</strong><span>NO WHATSAPP</span></div>
-            <span className="hero-art-index">R.01 — CATÁLOGO</span>
+            <div className="hero-art-tag"><span>FOTO REAL / HILUX</span><small>ACESSÓRIO NO TETO</small></div>
+            <div className="hero-art-stamp"><span>IMAGEM</span><strong>real</strong><span>COM CRÉDITO</span></div>
+            <span className="hero-art-index">FOTO DE REFERÊNCIA · HARDAP, NAMÍBIA</span>
+            <PhotoCreditLine credit={photoCredits.hero} className="hero-photo-credit" />
           </div>
         </section>
 
@@ -155,30 +163,24 @@ export default function Home() {
               <p className="eyebrow"><span className="eyebrow-line" /> PEÇAS PARA A SUA PRÓXIMA ROTA</p>
               <h2 id="catalog-title">Encontre o que<br /><span>seu Toyota precisa.</span></h2>
             </div>
-            <p className="section-intro">Explore a vitrine por categoria, referência ou modelo. A equipe confirma aplicação, valor e disponibilidade antes do pedido.</p>
+            <p className="section-intro">Veja fotos reais de referência de veículos e acessórios Toyota. Para peças sem foto ou sem ficha confirmada, consulte a equipe antes do pedido.</p>
           </div>
 
           <div className="catalog-toolbar">
             <label className="search-box">
               <Search size={19} aria-hidden="true" />
-              <span className="sr-only">Buscar peça por nome, código, modelo ou categoria</span>
+              <span className="sr-only">Buscar por nome de peça ou categoria</span>
               <input
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Busque peça, referência ou modelo..."
+                placeholder="Busque peça ou categoria..."
               />
               <kbd>⌕</kbd>
             </label>
-            <label className="model-select">
-              <SlidersHorizontal size={17} aria-hidden="true" />
-              <span className="sr-only">Filtrar por modelo</span>
-              <select value={model} onChange={(event) => setModel(event.target.value)}>
-                <option>Todos os modelos</option>
-                {catalogModels.map((item) => <option key={item}>{item}</option>)}
-              </select>
-              <ChevronDown size={15} aria-hidden="true" />
-            </label>
+            <button className="button button-outline catalog-help" type="button" onClick={() => openContact("atendimento")}>
+              <MessageCircle size={16} /> Procurar outra peça
+            </button>
           </div>
 
           <div className="category-row" role="group" aria-label="Filtrar por categoria">
@@ -202,15 +204,16 @@ export default function Home() {
               {filteredProducts.map((product, index) => (
                 <article className={`product-card product-card-${index + 1}`} key={product.id}>
                   <button className="product-image-button" type="button" onClick={() => setSelectedProduct(product)} aria-label={`Ver detalhes de ${product.name}`}>
-                  <img src={product.image} alt={product.imageAlt} loading="lazy" onError={(event) => { if (!event.currentTarget.dataset.fallback) { event.currentTarget.dataset.fallback = "true"; event.currentTarget.src = product.fallbackImage; } }} />
+                  <img src={product.image} alt={product.imageAlt} loading="lazy" />
                     <span className="product-category-label">{product.category}</span>
                     <span className="product-open-icon"><ArrowUpRight size={18} /></span>
                   </button>
                   <div className="product-card-body">
-                    <div className="product-meta"><span>REF. DEMO {product.reference}</span><span className="product-meta-dot" /></div>
+                    <div className="product-meta"><span>FOTO REAL · REFERÊNCIA</span><span className="product-meta-dot" /></div>
                     <h3>{product.name}</h3>
                     <p>{product.shortDescription}</p>
-                    <div className="product-fit"><Truck size={15} /><span>Consulte aplicação para seu modelo</span></div>
+                    <PhotoCreditLine credit={product.photoCredit} />
+                    <div className="product-fit"><Truck size={15} /><span>Estoque e aplicação não confirmados</span></div>
                     <div className="product-card-bottom">
                       <span className="price-label">VALOR</span>
                       <strong>Consulte</strong>
@@ -227,7 +230,7 @@ export default function Home() {
               <p>Consulte a equipe sobre esta família ou informe o nome da peça no atendimento. A aplicação é confirmada antes do pedido.</p>
               <div className="empty-state-actions">
                 <button className="button button-primary" type="button" onClick={() => openContact("atendimento", undefined, category === "Todos" ? undefined : category)}>Consultar esta família <ArrowUpRight size={15} /></button>
-                <button className="button button-outline" type="button" onClick={() => { setSearch(""); setCategory("Todos"); setModel("Todos os modelos"); }}>Limpar filtros</button>
+                <button className="button button-outline" type="button" onClick={() => { setSearch(""); setCategory("Todos"); }}>Limpar filtros</button>
               </div>
             </div>
           )}
@@ -255,7 +258,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="catalog-footnote"><span className="footnote-mark">i</span><p>Itens e referências apresentados para demonstração da vitrine. Confirme aplicação por modelo, ano e versão, além do valor e da disponibilidade, diretamente com a equipe.</p></div>
+          <div className="catalog-footnote"><span className="footnote-mark">i</span><p>As fotografias são reais e licenciadas, mas servem apenas como referência visual: não confirmam estoque, compatibilidade, preço ou origem Toyota das peças. Confirme modelo, ano, versão e código com a equipe.</p></div>
         </section>
 
         <section className="consult-section" id="consultas" aria-labelledby="consult-title">
@@ -298,7 +301,7 @@ export default function Home() {
             <p className="section-intro">Sem adivinhar aplicação. Sem surpresa no valor. Só um caminho claro para encontrar sua peça.</p>
           </div>
           <div className="steps-grid">
-            <article className="step-card"><span className="step-index">01</span><div className="step-icon"><Search size={20} /></div><h3>Encontre</h3><p>Busque pelo nome, referência, categoria ou modelo do veículo.</p><ArrowDownRight className="step-arrow" size={19} /></article>
+            <article className="step-card"><span className="step-index">01</span><div className="step-icon"><Search size={20} /></div><h3>Encontre</h3><p>Busque pelo nome ou família da peça.</p><ArrowDownRight className="step-arrow" size={19} /></article>
             <article className="step-card"><span className="step-index">02</span><div className="step-icon"><BadgeCheck size={20} /></div><h3>Confirme</h3><p>Converse com a equipe para confirmar aplicação, valor e disponibilidade.</p><ArrowDownRight className="step-arrow" size={19} /></article>
             <article className="step-card"><span className="step-index">03</span><div className="step-icon"><MessageCircle size={20} /></div><h3>Consulte</h3><p>Se precisar, consulte parcelas ou quitação pelo atendimento.</p><Check className="step-arrow step-check" size={19} /></article>
           </div>
@@ -320,6 +323,16 @@ export default function Home() {
           <p>Peças e acessórios para sua próxima rota. Atendimento direto para confirmar aplicação, valores e condições.</p>
           <button className="button button-light" type="button" onClick={() => openContact("atendimento")}><MessageCircle size={17} /> Falar no WhatsApp <ArrowUpRight size={15} /></button>
         </div>
+        <section className="photo-attributions" aria-labelledby="photo-attributions-title">
+          <h2 id="photo-attributions-title">Créditos das fotografias</h2>
+          {Object.values(photoCredits).map((credit) => (
+            <p key={credit.title}>
+              {credit.title} — © <a href={credit.authorUrl} target="_blank" rel="noopener noreferrer">{credit.author}</a>; <a href={credit.sourceUrl} target="_blank" rel="noopener noreferrer">fonte original</a>; <a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer">{credit.licenseLabel}</a>
+              {credit.additionalLicenseUrl && credit.additionalLicenseLabel && <>; <a href={credit.additionalLicenseUrl} target="_blank" rel="noopener noreferrer">{credit.additionalLicenseLabel}</a></>}.
+            </p>
+          ))}
+          <p>Os arquivos estão sem alteração; a página apenas os redimensiona para exibição. As imagens não implicam endosso nem confirmam estoque, aplicação ou venda do item fotografado.</p>
+        </section>
         <div className="footer-bottom"><span>© {new Date().getFullYear()} Rota Peças · Vitrine independente</span><span>Valores, disponibilidade e aplicação sujeitos à confirmação.</span><a href="#topo">Voltar ao topo ↑</a></div>
       </footer>
 
@@ -331,13 +344,14 @@ export default function Home() {
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedProduct(null); }}>
           <section className="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
             <button className="modal-close" type="button" onClick={() => setSelectedProduct(null)} aria-label="Fechar detalhes"><X size={20} /></button>
-            <div className="modal-image"><img src={selectedProduct.image} alt={selectedProduct.imageAlt} onError={(event) => { if (!event.currentTarget.dataset.fallback) { event.currentTarget.dataset.fallback = "true"; event.currentTarget.src = selectedProduct.fallbackImage; } }} /></div>
+            <div className="modal-image"><img src={selectedProduct.image} alt={selectedProduct.imageAlt} /></div>
             <div className="modal-content">
-              <p className="eyebrow"><span className="eyebrow-line" /> {selectedProduct.category.toUpperCase()} · REF. DEMO {selectedProduct.reference}</p>
+              <p className="eyebrow"><span className="eyebrow-line" /> {selectedProduct.category.toUpperCase()} · FOTO REAL</p>
               <h2 id="product-modal-title">{selectedProduct.name}</h2>
               <p className="modal-description">{selectedProduct.description}</p>
+              <PhotoCreditLine credit={selectedProduct.photoCredit} className="modal-photo-credit" />
               <dl className="product-specs">
-                <div><dt>Aplicação</dt><dd>{selectedProduct.models.join(", ")} — confirme ano e versão com a equipe</dd></div>
+                <div><dt>Aplicação</dt><dd>Confirme o modelo, ano, versão e código com a equipe.</dd></div>
                 <div><dt>Valor</dt><dd>Consultar</dd></div>
                 <div><dt>Disponibilidade</dt><dd>Confirme antes do pedido</dd></div>
               </dl>

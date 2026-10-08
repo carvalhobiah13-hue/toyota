@@ -8,7 +8,10 @@ const projectRoot = import.meta.dirname;
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: { "@": path.resolve(projectRoot, "client", "src") },
+    alias: {
+      "@": path.resolve(projectRoot, "client", "src"),
+      "@shared": path.resolve(projectRoot, "shared"),
+    },
   },
   root: path.resolve(projectRoot, "client"),
   publicDir: path.resolve(projectRoot, "client", "public"),

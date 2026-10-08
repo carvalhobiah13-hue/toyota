@@ -19,7 +19,7 @@ export function buildWhatsAppUrl(topic: ContactTopic, product?: CatalogProduct, 
   const lines = [
     "Olá! Vim pelo site de peças e acessórios para Toyota.",
     `Quero ${topicText[topic]}.`,
-    ...(product ? [`Produto: ${product.name} (ref. demonstrativa ${product.reference}).`] : []),
+    ...(product ? [`Item/foto de referência: ${product.name}.`] : []),
     ...(category ? [`Família de peça: ${category}.`] : []),
     "Meu veículo é: modelo, ano e versão a confirmar.",
     "Por favor, orientem-me sobre aplicação, valor, disponibilidade e próximos passos.",

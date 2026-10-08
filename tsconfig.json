@@ -19,12 +19,12 @@
         "./client/src/*"
       ]
     },
-    "types": [
-      "vite/client"
-    ]
+  "types": [
+    "vite/client"
+  ]
   },
   "include": [
-    "client/src/**/*"
+    "client/src/main.tsx"
   ],
   "exclude": [
     "node_modules",

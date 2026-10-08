@@ -1,14 +1,14 @@
+import { photoCredits, type PhotoCredit } from "./photoCredits";
+
 export type CatalogProduct = {
   id: string;
   name: string;
-  reference: string;
   category: string;
   shortDescription: string;
   description: string;
   image: string;
-  fallbackImage: string;
   imageAlt: string;
-  models: string[];
+  photoCredit: PhotoCredit;
 };
 
 export const catalogCategories = [
@@ -40,45 +40,27 @@ export const partFamilies = [
   { name: "Lubrificantes", detail: "Óleos e fluidos sob consulta" },
 ];
 
-export const catalogModels = ["Corolla", "Corolla Cross", "Hilux", "RAV4"];
-
-// Itens, referências e aplicações abaixo são exemplos demonstrativos, não estoque ativo nem peças verificadas.
-// As imagens principais são ilustrativas; SVGs locais próprios servem de fallback fora do armazenamento gerenciado.
+// Fotos de referência licenciadas, não anúncios de estoque ou declarações de compatibilidade.
+// Cada fotografia está identificada e creditada em photoCredits.ts e no rodapé do site.
 export const products: CatalogProduct[] = [
   {
-    id: "bagageiro-teto",
-    name: "Bagageiro de teto",
-    reference: "RP-001",
+    id: "acessorio-teto-land-cruiser-j60",
+    name: "Acessório de teto — Land Cruiser J60",
     category: "Acessórios",
-    shortDescription: "Mais espaço para levar o que importa.",
-    description: "Acessório de teto apresentado como referência visual. Confirme compatibilidade, tipo de fixação, modelo e ano do veículo antes da compra.",
-    image: "/images/fallback-bagageiro.svg",
-    fallbackImage: "/images/fallback-bagageiro.svg",
-    imageAlt: "Bagageiro de teto ilustrativo; a aplicação requer confirmação",
-    models: ["Corolla Cross", "Hilux", "RAV4"],
+    shortDescription: "Foto real do veículo com uma tenda instalada no teto.",
+    description: "A fotografia mostra um Toyota Land Cruiser J60 com uma tenda de teto de terceiro. É uma referência visual da família de acessórios, não um anúncio do item fotografado nem confirmação de estoque, origem Toyota ou compatibilidade. Consulte aplicação, marca, código, valor e disponibilidade antes da compra.",
+    image: "/images/toyota-land-cruiser-j60-roof-tent.jpg",
+    imageAlt: "Toyota Land Cruiser J60 fotografado de lado, com uma tenda montada no teto.",
+    photoCredit: photoCredits.roofAccessory,
   },
   {
-    id: "roda-liga-leve",
-    name: "Roda de liga leve",
-    reference: "RP-002",
+    id: "roda-toyota-prius-2004-eua",
+    name: "Conjunto de roda — Prius 2004 (EUA)",
     category: "Rodas e pneus",
-    shortDescription: "Consulte medidas e acabamento para seu veículo.",
-    description: "Imagem ilustrativa de uma roda de liga leve. Furação, largura, offset, diâmetro e aplicação variam conforme modelo e versão; a equipe deve confirmar todos os dados antes do pedido.",
-    image: "/images/fallback-roda.svg",
-    fallbackImage: "/images/fallback-roda.svg",
-    imageAlt: "Roda automotiva de liga leve ilustrativa",
-    models: ["Corolla", "Corolla Cross", "RAV4"],
-  },
-  {
-    id: "tapete-porta-malas",
-    name: "Tapete de porta-malas",
-    reference: "RP-003",
-    category: "Interior e proteção",
-    shortDescription: "Proteção prática para a área de carga.",
-    description: "Tapete de porta-malas apresentado como referência. O formato e os pontos de encaixe dependem do ano, versão e configuração do veículo; confirme a aplicação antes da compra.",
-    image: "/images/fallback-tapete.svg",
-    fallbackImage: "/images/fallback-tapete.svg",
-    imageAlt: "Tapete de porta-malas ilustrativo",
-    models: ["Corolla Cross", "Hilux", "RAV4"],
+    shortDescription: "Foto real da roda de um Prius 2004 na versão dos Estados Unidos.",
+    description: "A foto registra o conjunto de roda do Toyota Prius 2004 da versão dos Estados Unidos. A descrição original informa que os anéis externos e a calota central são plásticos. A imagem serve apenas como referência: estoque, código e aplicação no Brasil não estão confirmados. Consulte a equipe antes do pedido.",
+    image: "/images/toyota-prius-2004-wheel.jpg",
+    imageAlt: "Roda montada em um Toyota Prius 2004 da versão dos Estados Unidos.",
+    photoCredit: photoCredits.priusWheel,
   },
 ];
