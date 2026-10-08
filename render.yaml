@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: toyota-parts-store
+    runtime: static
+    buildCommand: npx --yes pnpm@10.18.0 install --frozen-lockfile && npx --yes pnpm@10.18.0 build:render
+    staticPublishPath: ./dist/public
+    envVars:
+      - key: VITE_WHATSAPP_NUMBER
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
